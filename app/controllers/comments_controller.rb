@@ -1,11 +1,14 @@
 class CommentsController < ApplicationController
-  
+  before_action :authenticate_user!, only: :create
+
   def create
     @comment = Comment.new(comment_params)
+    @prototype = Prototype.find(params[:prototype_id])
     if @comment.save
       redirect_to prototype_path(@comment.prototype), method: :get
     else
-      render :show
+      @comments = @prototype.comments.includes(:user)
+      render template: "prototypes/show"
     end
   end
 
